@@ -1,5 +1,6 @@
 import type { SessionUser } from './types';
 import LoginPage from './LoginPage';
+import AdminList from './admin/AdminList';
 
 type LoginForm = {
 	message?: string;
@@ -35,10 +36,7 @@ function AdminHome({ user }: { user: SessionUser }) {
 				</div>
 			</header>
 			<main className="app-main">
-				<div className="apply-card home-card">
-					<h1>管理员工作台</h1>
-					<p className="subtitle">审批功能下一步再做，当前仅支持用户发起申请。</p>
-				</div>
+				<AdminList />
 			</main>
 		</div>
 	);

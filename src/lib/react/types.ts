@@ -33,6 +33,17 @@ export type ApplyStep = 'home' | 'applicant' | 'content' | 'preview' | 'done';
 
 export type FormSection = 'applicant' | 'content';
 
+export type ApplicationStatus = 'pending' | 'approved' | 'rejected';
+
+export type TravelApplication = {
+	id: string;
+	username: string;
+	applicant: ApplicantInfo;
+	content: ApplicationContent;
+	status: ApplicationStatus;
+	createdAt: string;
+};
+
 export type FieldIssue = {
 	section: FormSection;
 	field: string;

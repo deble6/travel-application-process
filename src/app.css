@@ -487,3 +487,160 @@ body {
 		flex-direction: column;
 	}
 }
+
+.admin-page {
+	width: min(1080px, 100%);
+	margin: 0 auto;
+}
+
+.admin-head h1 {
+	margin: 0;
+	font-size: 24px;
+}
+
+.admin-head .subtitle {
+	text-align: left;
+	margin-bottom: 16px;
+}
+
+.filter-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.filter-tabs button {
+	height: 36px;
+	padding: 0 14px;
+	border: 1px solid #d7e0e7;
+	border-radius: 999px;
+	background: #fff;
+	color: #4b5563;
+	font-size: 13px;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.filter-tabs button span {
+	min-width: 18px;
+	height: 18px;
+	padding: 0 6px;
+	border-radius: 999px;
+	background: #f3f4f6;
+	display: inline-grid;
+	place-items: center;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.filter-tabs button.active {
+	border-color: #2a9d8f;
+	background: #e8f6f4;
+	color: #1d7870;
+	font-weight: 600;
+}
+
+.filter-tabs button.active span {
+	background: #2a9d8f;
+	color: #fff;
+}
+
+.list-card {
+	background: #fff;
+	border: 1px solid #e5edf2;
+	border-radius: 16px;
+	box-shadow: 0 18px 50px rgba(31, 54, 72, 0.08);
+	overflow: auto;
+}
+
+.apply-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 14px;
+}
+
+.apply-table th,
+.apply-table td {
+	padding: 12px 14px;
+	text-align: left;
+	white-space: nowrap;
+	border-bottom: 1px solid #eef2f5;
+}
+
+.apply-table th {
+	color: #6b7280;
+	font-weight: 600;
+	background: #f8fafc;
+}
+
+.apply-table tbody tr {
+	cursor: pointer;
+}
+
+.apply-table tbody tr:hover,
+.apply-table tbody tr.is-open {
+	background: #f3fbf9;
+}
+
+.status-badge {
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.status-pending {
+	background: #fff7ed;
+	color: #c2410c;
+}
+
+.status-approved {
+	background: #e8f6f4;
+	color: #1d7870;
+}
+
+.status-rejected {
+	background: #fef2f2;
+	color: #b91c1c;
+}
+
+.detail-row {
+	cursor: default;
+}
+
+.detail-row:hover {
+	background: #fff !important;
+}
+
+.detail-row dl {
+	margin: 0;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px 24px;
+}
+
+.detail-row dl > div {
+	display: grid;
+	grid-template-columns: 72px 1fr;
+	gap: 8px;
+	font-size: 13px;
+}
+
+.detail-row dt {
+	color: #6b7280;
+}
+
+.detail-row dd {
+	margin: 0;
+	white-space: pre-wrap;
+}
+
+@media (max-width: 800px) {
+	.detail-row dl {
+		grid-template-columns: 1fr;
+	}
+}
