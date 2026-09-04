@@ -5,6 +5,7 @@ import {
 	listApplications,
 	updateApplicationStatus
 } from '$lib/server/applications';
+import { buildReport } from '$lib/react/admin/stats';
 
 function requireAdmin(locals: App.Locals) {
 	if (!locals.user) redirect(303, '/');
@@ -22,11 +23,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const user = requireAdmin(locals);
 	const id = url.searchParams.get('id') ?? '';
 	const selected = id ? getApplication(id) : undefined;
+	const applications = listApplications();
 
 	return {
 		user,
-		applications: listApplications(),
-		selectedId: selected?.id ?? ''
+		applications,
+		selectedId: selected?.id ?? '',
+		view: url.searchParams.get('view') === 'stats' ? 'stats' : 'list',
+		report: buildReport(applications)
 	};
 };
 

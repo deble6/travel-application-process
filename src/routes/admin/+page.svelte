@@ -14,6 +14,8 @@
 			user: data.user,
 			applications: data.applications,
 			selectedId: data.selectedId,
+			view: data.view,
+			report: data.report,
 			form
 		};
 

@@ -1,11 +1,9 @@
-import { useMemo } from 'react';
-import type { TravelApplication } from '../types';
-import { buildReport, formatMoney, formatPercent, type StatRow } from './stats';
+import { formatMoney, formatPercent, type AdminReport, type StatRow } from './stats';
 
 const STATUS_CLASS = ['pending', 'approved', 'rejected'] as const;
 
 type Props = {
-	applications: TravelApplication[];
+	report: AdminReport;
 };
 
 function BarList({ rows, tone }: { rows: StatRow[]; tone?: 'status' }) {
@@ -36,9 +34,7 @@ function BarList({ rows, tone }: { rows: StatRow[]; tone?: 'status' }) {
 	);
 }
 
-export default function AdminStats({ applications }: Props) {
-	const report = useMemo(() => buildReport(applications), [applications]);
-
+export default function AdminStats({ report }: Props) {
 	if (report.total === 0) {
 		return (
 			<div className="apply-card home-card">

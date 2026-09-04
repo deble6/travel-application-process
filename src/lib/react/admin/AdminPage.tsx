@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { ApplicationStatus, SessionUser, TravelApplication } from '../types';
+import type { AdminReport } from './stats';
 import { formatTime, STATUS_TEXT } from './status';
 import AdminDetail from './AdminDetail';
 import AdminStats from './AdminStats';
@@ -15,11 +16,12 @@ type Props = {
 	user: SessionUser;
 	applications: TravelApplication[];
 	selectedId: string;
+	view: 'list' | 'stats';
+	report: AdminReport;
 	form?: { message?: string; id?: string } | null;
 };
 
-export default function AdminPage({ user, applications, selectedId, form }: Props) {
-	const [view, setView] = useState<'list' | 'stats'>('list');
+export default function AdminPage({ user, applications, selectedId, view, report, form }: Props) {
 	const [filter, setFilter] = useState<'all' | ApplicationStatus>('all');
 
 	const visible = useMemo(
@@ -69,26 +71,26 @@ export default function AdminPage({ user, applications, selectedId, form }: Prop
 								</p>
 							</div>
 							<div className="view-tabs">
-								<button
-									type="button"
+								<a
 									className={view === 'list' ? 'active' : ''}
-									onClick={() => setView('list')}
+									href="/admin"
+									data-sveltekit-reload=""
 								>
 									申请列表
-								</button>
-								<button
-									type="button"
+								</a>
+								<a
 									className={view === 'stats' ? 'active' : ''}
-									onClick={() => setView('stats')}
+									href="/admin?view=stats"
+									data-sveltekit-reload=""
 								>
 									统计报表
-								</button>
+								</a>
 							</div>
 						</div>
 
 						{form?.message ? <p className="error">{form.message}</p> : null}
 
-						{view === 'stats' ? <AdminStats applications={applications} /> : null}
+						{view === 'stats' ? <AdminStats report={report} /> : null}
 
 						{view === 'list' ? (
 							<>

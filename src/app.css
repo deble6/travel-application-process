@@ -534,7 +534,10 @@ a.link-btn {
 	gap: 8px;
 }
 
+.view-tabs a,
 .view-tabs button {
+	display: inline-flex;
+	align-items: center;
 	height: 36px;
 	padding: 0 14px;
 	border: 1px solid #d7e0e7;
@@ -543,8 +546,10 @@ a.link-btn {
 	color: #4b5563;
 	font-size: 13px;
 	cursor: pointer;
+	text-decoration: none;
 }
 
+.view-tabs a.active,
 .view-tabs button.active {
 	border-color: #2a9d8f;
 	background: #2a9d8f;
