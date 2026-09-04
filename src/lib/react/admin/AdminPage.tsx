@@ -17,11 +17,12 @@ type Props = {
 	applications: TravelApplication[];
 	selectedId: string;
 	view: 'list' | 'stats';
+	mode: 'view' | 'approve';
 	report: AdminReport;
 	form?: { message?: string; id?: string } | null;
 };
 
-export default function AdminPage({ user, applications, selectedId, view, report, form }: Props) {
+export default function AdminPage({ user, applications, selectedId, view, report, mode, form }: Props) {
 	const [filter, setFilter] = useState<'all' | ApplicationStatus>('all');
 
 	const visible = useMemo(
@@ -58,18 +59,10 @@ export default function AdminPage({ user, applications, selectedId, view, report
 			</header>
 			<main className="app-main">
 				{selected ? (
-					<AdminDetail item={selected} message={form?.message} />
+					<AdminDetail item={selected} mode={mode} message={form?.message} />
 				) : (
 					<div className="admin-page">
 						<div className="admin-head">
-							<div>
-								<h1>{view === 'stats' ? '统计报表' : '申请列表'}</h1>
-								<p className="subtitle">
-									{view === 'stats'
-										? '查看申请数量、审批情况和费用分布。'
-										: '查看申请详情，并处理当前流程状态。'}
-								</p>
-							</div>
 							<div className="view-tabs">
 								<a
 									className={view === 'list' ? 'active' : ''}
@@ -109,10 +102,7 @@ export default function AdminPage({ user, applications, selectedId, view, report
 						</div>
 
 						{visible.length === 0 ? (
-							<div className="apply-card home-card">
-								<h1>暂无申请</h1>
-								<p className="subtitle">当前筛选条件下没有差旅申请。</p>
-							</div>
+							<div className="list-card empty-list">暂无申请</div>
 						) : (
 							<div className="list-card">
 								<table className="apply-table">
@@ -144,7 +134,7 @@ export default function AdminPage({ user, applications, selectedId, view, report
 													</span>
 												</td>
 												<td>{formatTime(item.createdAt)}</td>
-												<td>
+												<td className="table-actions">
 													<a
 														className="link-btn"
 														href={`/admin?id=${encodeURIComponent(item.id)}`}
@@ -152,6 +142,15 @@ export default function AdminPage({ user, applications, selectedId, view, report
 													>
 														查看
 													</a>
+													{item.status === 'pending' ? (
+														<a
+															className="link-btn"
+															href={`/admin?id=${encodeURIComponent(item.id)}&mode=approve`}
+															data-sveltekit-reload=""
+														>
+															审批
+														</a>
+													) : null}
 												</td>
 											</tr>
 										))}

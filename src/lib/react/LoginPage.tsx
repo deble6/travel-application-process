@@ -11,7 +11,6 @@ export default function LoginPage({ form }: { form?: LoginForm | null }) {
 		<div className="login-page">
 			<form className="login-card" method="POST" action="?/login" data-sveltekit-reload="">
 				<h1>差旅申请系统</h1>
-				<p className="subtitle">请选择角色后登录</p>
 
 				{form?.message ? <p className="error">{form.message}</p> : null}
 

@@ -9,6 +9,7 @@ type AdminProps = {
 	applications: TravelApplication[];
 	selectedId: string;
 	view: 'list' | 'stats';
+	mode: 'view' | 'approve';
 	report: AdminReport;
 	form?: { message?: string; id?: string } | null;
 };

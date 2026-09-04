@@ -4,20 +4,18 @@ import { formatTime, STATUS_TEXT } from './status';
 
 type Props = {
 	item: TravelApplication;
+	mode: 'view' | 'approve';
 	message?: string;
 };
 
-export default function AdminDetail({ item, message }: Props) {
-	const [rejecting, setRejecting] = useState(Boolean(message));
+export default function AdminDetail({ item, mode, message }: Props) {
+	const canProcess = mode === 'approve' && item.status === 'pending';
+	const [rejecting, setRejecting] = useState(Boolean(message) && canProcess);
 	const [comment, setComment] = useState('');
 
 	return (
 		<div className="apply-card preview-card">
 			<div className="detail-head">
-				<div>
-					<h1>申请详情</h1>
-					<p className="subtitle">核对申请内容后，可处理当前流程状态</p>
-				</div>
 				<span className={`status-badge status-${item.status}`}>{STATUS_TEXT[item.status]}</span>
 			</div>
 
@@ -105,7 +103,7 @@ export default function AdminDetail({ item, message }: Props) {
 				</section>
 			) : null}
 
-			{item.status === 'pending' && rejecting ? (
+			{canProcess && rejecting ? (
 				<form className="process-box" method="POST" action="?/reject" data-sveltekit-reload="">
 					<input type="hidden" name="id" value={item.id} />
 					<label className="field">
@@ -128,11 +126,11 @@ export default function AdminDetail({ item, message }: Props) {
 					</div>
 				</form>
 			) : (
-				<div className={`actions ${item.status === 'pending' ? 'detail-actions' : ''}`}>
+				<div className={`actions ${canProcess ? 'detail-actions' : 'actions-one'}`}>
 					<a className="btn secondary" href="/admin" data-sveltekit-reload="">
 						返回列表
 					</a>
-					{item.status === 'pending' ? (
+					{canProcess ? (
 						<>
 							<button type="button" className="danger" onClick={() => setRejecting(true)}>
 								驳回
@@ -142,12 +140,7 @@ export default function AdminDetail({ item, message }: Props) {
 								<button type="submit">通过</button>
 							</form>
 						</>
-					) : (
-						<form method="POST" action="?/reopen" data-sveltekit-reload="">
-							<input type="hidden" name="id" value={item.id} />
-							<button type="submit">退回待审批</button>
-						</form>
-					)}
+					) : null}
 				</div>
 			)}
 		</div>

@@ -11,39 +11,26 @@ function BarList({ rows, tone }: { rows: StatRow[]; tone?: 'status' }) {
 
 	return (
 		<div className="stat-bars">
-			{rows.length === 0 ? (
-				<p className="subtitle">暂无数据</p>
-			) : (
-				rows.map((row, index) => (
-					<div className="stat-bar-row" key={row.name}>
-						<span>{row.name}</span>
-						<div className="stat-bar">
-							<i
-								className={tone === 'status' ? `bar-${STATUS_CLASS[index] ?? 'pending'}` : ''}
-								style={{ width: `${Math.max((row.count / max) * 100, row.count ? 8 : 0)}%` }}
-							/>
-						</div>
-						<strong>
-							{row.count}
-							<em>{row.percent}%</em>
-						</strong>
+			{rows.map((row, index) => (
+				<div className="stat-bar-row" key={row.name}>
+					<span>{row.name}</span>
+					<div className="stat-bar">
+						<i
+							className={tone === 'status' ? `bar-${STATUS_CLASS[index] ?? 'pending'}` : ''}
+							style={{ width: `${Math.max((row.count / max) * 100, row.count ? 8 : 0)}%` }}
+						/>
 					</div>
-				))
-			)}
+					<strong>
+						{row.count}
+						<em>{row.percent}%</em>
+					</strong>
+				</div>
+			))}
 		</div>
 	);
 }
 
 export default function AdminStats({ report }: Props) {
-	if (report.total === 0) {
-		return (
-			<div className="apply-card home-card">
-				<h1>暂无统计数据</h1>
-				<p className="subtitle">还没有差旅申请，提交后可在这里查看统计报表。</p>
-			</div>
-		);
-	}
-
 	return (
 		<div className="stats-page">
 			<div className="stat-grid">
@@ -87,10 +74,6 @@ export default function AdminStats({ report }: Props) {
 				<section className="stat-panel">
 					<h2>出行类型</h2>
 					<BarList rows={report.byTripType} />
-				</section>
-				<section className="stat-panel">
-					<h2>目的地</h2>
-					<BarList rows={report.byDestination} />
 				</section>
 			</div>
 		</div>

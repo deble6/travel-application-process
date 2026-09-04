@@ -16,10 +16,14 @@ const submittedFlags = new Set<string>();
 
 export function getDraft(username: string, name: string): TravelDraft {
 	const current = drafts.get(username);
-	if (current) return current;
+	if (current) {
+		if (current.step === 'home' || current.step === 'done') current.step = 'applicant';
+		if (!current.applicant.name) current.applicant.name = name;
+		return current;
+	}
 
 	const created: TravelDraft = {
-		step: 'home',
+		step: 'applicant',
 		applicant: emptyApplicant(name),
 		content: emptyContent(),
 		previewed: false
@@ -34,7 +38,7 @@ export function saveDraft(username: string, draft: TravelDraft) {
 
 export function clearDraft(username: string, name: string) {
 	drafts.set(username, {
-		step: 'home',
+		step: 'applicant',
 		applicant: emptyApplicant(name),
 		content: emptyContent(),
 		previewed: false

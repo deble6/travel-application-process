@@ -1,4 +1,4 @@
-import type { SessionUser, TravelDraft } from './types';
+import type { FieldIssue, SessionUser, TravelDraft } from './types';
 import ApplyFlow from './apply/ApplyFlow';
 
 type Props = {
@@ -6,7 +6,7 @@ type Props = {
 	draft: TravelDraft;
 	submitted: boolean;
 	focusField?: string;
-	form?: { message?: string } | null;
+	form?: { message?: string; issues?: FieldIssue[] } | null;
 };
 
 export default function ApplyPage({ user, draft, submitted, focusField, form }: Props) {
@@ -30,7 +30,7 @@ export default function ApplyPage({ user, draft, submitted, focusField, form }: 
 					draft={draft}
 					submitted={submitted}
 					focusField={focusField}
-					message={form?.message}
+					issues={form?.issues}
 				/>
 			</main>
 		</div>

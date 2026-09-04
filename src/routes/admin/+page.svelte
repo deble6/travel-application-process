@@ -15,6 +15,7 @@
 			applications: data.applications,
 			selectedId: data.selectedId,
 			view: data.view,
+			mode: data.mode,
 			report: data.report,
 			form
 		};

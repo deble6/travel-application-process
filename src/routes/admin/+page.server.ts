@@ -30,6 +30,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		applications,
 		selectedId: selected?.id ?? '',
 		view: url.searchParams.get('view') === 'stats' ? 'stats' : 'list',
+		mode: url.searchParams.get('mode') === 'approve' ? 'approve' : 'view',
 		report: buildReport(applications)
 	};
 };

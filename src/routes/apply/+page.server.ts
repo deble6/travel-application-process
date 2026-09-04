@@ -1,6 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import {
+	clearDraft,
 	clearSubmitted,
 	getDraft,
 	hasJustSubmitted,
@@ -10,6 +11,7 @@ import {
 	submitDraft
 } from '$lib/server/applications';
 import type { ApplyStep } from '$lib/react/types';
+import { applicantIssues, contentIssues } from '$lib/react/validate';
 
 const FOCUS_FIELDS = new Set([
 	'name',
@@ -56,19 +58,7 @@ export const actions: Actions = {
 
 	start: async ({ locals }) => {
 		const user = requireUser(locals);
-		const draft = getDraft(user.username, user.name);
-		draft.step = 'applicant';
-		if (!draft.applicant.name) draft.applicant.name = user.name;
-		saveDraft(user.username, draft);
-		clearSubmitted(user.username);
-		redirect(303, '/apply');
-	},
-
-	home: async ({ locals }) => {
-		const user = requireUser(locals);
-		const draft = getDraft(user.username, user.name);
-		draft.step = 'home';
-		saveDraft(user.username, draft);
+		clearDraft(user.username, user.name);
 		clearSubmitted(user.username);
 		redirect(303, '/apply');
 	},
@@ -77,16 +67,14 @@ export const actions: Actions = {
 		const user = requireUser(locals);
 		const draft = getDraft(user.username, user.name);
 		draft.applicant = readApplicant(await request.formData());
-		draft.step = 'content';
-		saveDraft(user.username, draft);
-		redirect(303, '/apply');
-	},
+		const issues = applicantIssues(draft.applicant);
+		if (issues.length > 0) {
+			draft.step = 'applicant';
+			saveDraft(user.username, draft);
+			return fail(400, { issues });
+		}
 
-	saveApplicantBack: async ({ locals, request }) => {
-		const user = requireUser(locals);
-		const draft = getDraft(user.username, user.name);
-		draft.applicant = readApplicant(await request.formData());
-		draft.step = 'home';
+		draft.step = 'content';
 		saveDraft(user.username, draft);
 		redirect(303, '/apply');
 	},
@@ -95,8 +83,14 @@ export const actions: Actions = {
 		const user = requireUser(locals);
 		const draft = getDraft(user.username, user.name);
 		draft.content = readContent(await request.formData());
+		const issues = contentIssues(draft.content);
+		if (issues.length > 0) {
+			draft.step = 'content';
+			saveDraft(user.username, draft);
+			return fail(400, { issues });
+		}
+
 		draft.step = 'preview';
-		draft.previewed = true;
 		saveDraft(user.username, draft);
 		redirect(303, '/apply');
 	},
@@ -114,7 +108,7 @@ export const actions: Actions = {
 		const user = requireUser(locals);
 		const data = await request.formData();
 		const [step, field] = String(data.get('goto') ?? '').split(':');
-		const allowed: ApplyStep[] = ['home', 'applicant', 'content', 'preview'];
+		const allowed: ApplyStep[] = ['applicant', 'content', 'preview'];
 		if (!allowed.includes(step as ApplyStep)) {
 			redirect(303, '/apply');
 		}
@@ -130,10 +124,9 @@ export const actions: Actions = {
 		const result = submitDraft(user.username, user.name);
 		if (!result.ok) {
 			const draft = result.draft;
-			draft.step = 'preview';
-			draft.previewed = true;
+			draft.step = result.issues[0]?.section ?? 'applicant';
 			saveDraft(user.username, draft);
-			return fail(400, { message: '请先修改后再提交' });
+			return fail(400, { issues: result.issues });
 		}
 		redirect(303, '/apply');
 	}

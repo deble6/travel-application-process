@@ -1,4 +1,4 @@
-import type { TravelApplication } from '../types';
+import { DEPARTMENTS, type TravelApplication } from '../types';
 import { STATUS_TEXT } from './status';
 
 export type StatRow = {
@@ -20,7 +20,6 @@ export type AdminReport = {
 	byStatus: StatRow[];
 	byDepartment: StatRow[];
 	byTripType: StatRow[];
-	byDestination: StatRow[];
 };
 
 function parseBudget(value: string) {
@@ -76,9 +75,16 @@ export function buildReport(applications: TravelApplication[]): AdminReport {
 				amount: items.reduce((sum, item) => sum + parseBudget(item.content.budget), 0)
 			};
 		}),
-		byDepartment: groupRows(applications, (item) => item.applicant.department),
-		byTripType: groupRows(applications, (item) => item.content.tripType),
-		byDestination: groupRows(applications, (item) => item.content.destination)
+		byDepartment: DEPARTMENTS.map((name) => {
+			const items = applications.filter((item) => item.applicant.department === name);
+			return {
+				name,
+				count: items.length,
+				amount: items.reduce((sum, item) => sum + parseBudget(item.content.budget), 0),
+				percent: applications.length ? Math.round((items.length / applications.length) * 100) : 0
+			};
+		}),
+		byTripType: groupRows(applications, (item) => item.content.tripType)
 	};
 }
 
