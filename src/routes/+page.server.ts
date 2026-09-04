@@ -3,6 +3,10 @@ import { USERS } from '$lib/server/users';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
+	if (locals.user?.role === 'user') {
+		redirect(303, '/apply');
+	}
+
 	return {
 		user: locals.user ?? null
 	};
@@ -46,7 +50,7 @@ export const actions: Actions = {
 			}
 		);
 
-		redirect(303, '/');
+		redirect(303, user.role === 'user' ? '/apply' : '/');
 	},
 
 	logout: async ({ cookies }) => {

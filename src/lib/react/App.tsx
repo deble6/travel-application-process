@@ -1,6 +1,5 @@
 import type { SessionUser } from './types';
 import LoginPage from './LoginPage';
-import ApplyFlow from './apply/ApplyFlow';
 
 type LoginForm = {
 	message?: string;
@@ -50,24 +49,5 @@ export default function App({ user, form }: Props) {
 		return <LoginPage form={form} />;
 	}
 
-	if (user.role === 'admin') {
-		return <AdminHome user={user} />;
-	}
-
-	return (
-		<div className="app-shell">
-			<header className="topbar">
-				<strong>差旅申请系统</strong>
-				<div className="topbar-right">
-					<span>
-						{user.name} · 用户
-					</span>
-					<LogoutButton />
-				</div>
-			</header>
-			<main className="app-main">
-				<ApplyFlow user={user} />
-			</main>
-		</div>
-	);
+	return <AdminHome user={user} />;
 }

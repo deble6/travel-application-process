@@ -6,20 +6,9 @@ type Props = {
 	issues: FieldIssue[];
 	showIssues?: boolean;
 	focusField?: string;
-	onChange: (value: ApplicationContent) => void;
-	onNext: () => void;
-	onBack: () => void;
 };
 
-export default function ContentForm({
-	value,
-	issues,
-	showIssues,
-	focusField,
-	onChange,
-	onNext,
-	onBack
-}: Props) {
+export default function ContentForm({ value, issues, showIssues, focusField }: Props) {
 	const formRef = useRef<HTMLFormElement>(null);
 
 	useEffect(() => {
@@ -37,32 +26,22 @@ export default function ContentForm({
 		<form
 			ref={formRef}
 			className="apply-card"
-			onSubmit={(event) => {
-				event.preventDefault();
-				onNext();
-			}}
+			method="POST"
+			action="?/saveContent"
+			data-sveltekit-reload=""
 		>
 			<h1>申请内容</h1>
 			<p className="subtitle">请填写本次差旅的行程和事由</p>
 
 			<label className={`field ${showIssues && issueFor('destination') ? 'has-issue' : ''}`}>
 				<span>目的地</span>
-				<input
-					name="destination"
-					value={value.destination}
-					placeholder="例如：上海"
-					onChange={(event) => onChange({ ...value, destination: event.target.value })}
-				/>
+				<input name="destination" defaultValue={value.destination} placeholder="例如：上海" />
 				{showIssues && issueFor('destination') ? <em>{issueFor('destination')?.message}</em> : null}
 			</label>
 
 			<label className={`field ${showIssues && issueFor('tripType') ? 'has-issue' : ''}`}>
 				<span>出行类型</span>
-				<select
-					name="tripType"
-					value={value.tripType}
-					onChange={(event) => onChange({ ...value, tripType: event.target.value })}
-				>
+				<select name="tripType" defaultValue={value.tripType}>
 					<option value="">请选择出行类型</option>
 					{TRIP_TYPES.map((item) => (
 						<option key={item} value={item}>
@@ -76,34 +55,19 @@ export default function ContentForm({
 			<div className="field-row">
 				<label className={`field ${showIssues && issueFor('startDate') ? 'has-issue' : ''}`}>
 					<span>出发日期</span>
-					<input
-						name="startDate"
-						type="date"
-						value={value.startDate}
-						onChange={(event) => onChange({ ...value, startDate: event.target.value })}
-					/>
+					<input name="startDate" type="date" defaultValue={value.startDate} />
 					{showIssues && issueFor('startDate') ? <em>{issueFor('startDate')?.message}</em> : null}
 				</label>
 				<label className={`field ${showIssues && issueFor('endDate') ? 'has-issue' : ''}`}>
 					<span>返回日期</span>
-					<input
-						name="endDate"
-						type="date"
-						value={value.endDate}
-						onChange={(event) => onChange({ ...value, endDate: event.target.value })}
-					/>
+					<input name="endDate" type="date" defaultValue={value.endDate} />
 					{showIssues && issueFor('endDate') ? <em>{issueFor('endDate')?.message}</em> : null}
 				</label>
 			</div>
 
 			<label className="field">
 				<span>预估费用（选填）</span>
-				<input
-					name="budget"
-					value={value.budget}
-					placeholder="例如：3500"
-					onChange={(event) => onChange({ ...value, budget: event.target.value })}
-				/>
+				<input name="budget" defaultValue={value.budget} placeholder="例如：3500" />
 			</label>
 
 			<label className={`field ${showIssues && issueFor('purpose') ? 'has-issue' : ''}`}>
@@ -111,15 +75,14 @@ export default function ContentForm({
 				<textarea
 					name="purpose"
 					rows={4}
-					value={value.purpose}
+					defaultValue={value.purpose}
 					placeholder="请简要说明出差目的"
-					onChange={(event) => onChange({ ...value, purpose: event.target.value })}
 				/>
 				{showIssues && issueFor('purpose') ? <em>{issueFor('purpose')?.message}</em> : null}
 			</label>
 
 			<div className="actions">
-				<button type="button" className="btn secondary" onClick={onBack}>
+				<button type="submit" className="btn secondary" formAction="?/saveContentBack">
 					上一步
 				</button>
 				<button type="submit">去预览</button>

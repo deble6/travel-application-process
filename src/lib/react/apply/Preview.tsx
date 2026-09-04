@@ -3,9 +3,7 @@ import type { FieldIssue, FormSection, TravelDraft } from '../types';
 type Props = {
 	draft: TravelDraft;
 	issues: FieldIssue[];
-	onEdit: (section: FormSection, field?: string) => void;
-	onSubmit: () => void;
-	onBack: () => void;
+	message?: string;
 };
 
 const APPLICANT_FIELDS = [
@@ -24,7 +22,7 @@ const CONTENT_FIELDS = [
 	{ key: 'purpose', label: '出差事由' }
 ] as const;
 
-export default function Preview({ draft, issues, onEdit, onSubmit, onBack }: Props) {
+export default function Preview({ draft, issues, message }: Props) {
 	function display(value: string) {
 		return value.trim() ? value : '未填写';
 	}
@@ -34,9 +32,11 @@ export default function Preview({ draft, issues, onEdit, onSubmit, onBack }: Pro
 	}
 
 	return (
-		<div className="apply-card preview-card">
+		<form className="apply-card preview-card" method="POST" data-sveltekit-reload="">
 			<h1>预览确认</h1>
 			<p className="subtitle">请核对填写内容，有问题可跳回对应表单修改</p>
+
+			{message ? <p className="error">{message}</p> : null}
 
 			{issues.length > 0 ? (
 				<div className="issue-box">
@@ -44,7 +44,12 @@ export default function Preview({ draft, issues, onEdit, onSubmit, onBack }: Pro
 					<ul>
 						{issues.map((item) => (
 							<li key={`${item.section}-${item.field}`}>
-								<button type="button" onClick={() => onEdit(item.section, item.field)}>
+								<button
+									type="submit"
+									formAction="?/go"
+									name="goto"
+									value={`${item.section}:${item.field}`}
+								>
 									{item.section === 'applicant' ? '申请人信息' : '申请内容'} · {item.label}
 								</button>
 								<span>{item.message}</span>
@@ -59,7 +64,7 @@ export default function Preview({ draft, issues, onEdit, onSubmit, onBack }: Pro
 			<section className="preview-section">
 				<header>
 					<h2>申请人信息</h2>
-					<button type="button" className="link-btn" onClick={() => onEdit('applicant')}>
+					<button type="submit" className="link-btn" formAction="?/go" name="goto" value="applicant">
 						去修改
 					</button>
 				</header>
@@ -76,7 +81,7 @@ export default function Preview({ draft, issues, onEdit, onSubmit, onBack }: Pro
 			<section className="preview-section">
 				<header>
 					<h2>申请内容</h2>
-					<button type="button" className="link-btn" onClick={() => onEdit('content')}>
+					<button type="submit" className="link-btn" formAction="?/go" name="goto" value="content">
 						去修改
 					</button>
 				</header>
@@ -97,13 +102,13 @@ export default function Preview({ draft, issues, onEdit, onSubmit, onBack }: Pro
 			</section>
 
 			<div className="actions">
-				<button type="button" className="btn secondary" onClick={onBack}>
+				<button type="submit" className="btn secondary" formAction="?/go" name="goto" value="content">
 					返回修改
 				</button>
-				<button type="button" disabled={issues.length > 0} onClick={onSubmit}>
+				<button type="submit" formAction="?/submit" disabled={issues.length > 0}>
 					确认提交
 				</button>
 			</div>
-		</div>
+		</form>
 	);
 }

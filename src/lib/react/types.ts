@@ -26,6 +26,7 @@ export type TravelDraft = {
 	applicant: ApplicantInfo;
 	content: ApplicationContent;
 	step: ApplyStep;
+	previewed?: boolean;
 };
 
 export type ApplyStep = 'home' | 'applicant' | 'content' | 'preview' | 'done';
