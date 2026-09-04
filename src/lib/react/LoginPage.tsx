@@ -1,42 +1,10 @@
-type Role = 'admin' | 'user';
-
 type LoginForm = {
 	message?: string;
 	username?: string;
 	role?: string;
 };
 
-type LoginPageProps = {
-	user: {
-		username: string;
-		name: string;
-		role: Role;
-	} | null;
-	form?: LoginForm | null;
-};
-
-const roleText: Record<Role, string> = {
-	admin: '管理员',
-	user: '用户'
-};
-
-export default function LoginPage({ user, form }: LoginPageProps) {
-	if (user) {
-		return (
-			<div className="login-page">
-				<form className="login-card welcome" method="POST" action="?/logout" data-sveltekit-reload="">
-					<h1>登录成功</h1>
-					<p>欢迎，{user.name}</p>
-					<div className="badge">{roleText[user.role]}</div>
-					<button className="secondary" type="submit">
-						退出登录
-					</button>
-					<p className="hint">下一步会在这里继续做差旅申请流程。</p>
-				</form>
-			</div>
-		);
-	}
-
+export default function LoginPage({ form }: { form?: LoginForm | null }) {
 	const selectedRole = form?.role === 'user' ? 'user' : 'admin';
 
 	return (

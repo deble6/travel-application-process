@@ -13,9 +13,9 @@
 		let cancelled = false;
 		let unmount: (() => void) | undefined;
 
-		import('$lib/react/mountLogin').then(({ mountLogin }) => {
+		import('$lib/react/mountLogin').then(({ mountApp }) => {
 			if (cancelled) return;
-			unmount = mountLogin(el, { user, form: formState });
+			unmount = mountApp(el, { user, form: formState });
 		});
 
 		return () => {

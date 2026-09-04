@@ -1,13 +1,10 @@
 import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
-import LoginPage from './LoginPage';
+import App from './App';
+import type { SessionUser } from './types';
 
-type LoginPageProps = {
-	user: {
-		username: string;
-		name: string;
-		role: 'admin' | 'user';
-	} | null;
+type AppProps = {
+	user: SessionUser | null;
 	form?: {
 		message?: string;
 		username?: string;
@@ -15,8 +12,8 @@ type LoginPageProps = {
 	} | null;
 };
 
-export function mountLogin(target: HTMLElement, props: LoginPageProps) {
+export function mountApp(target: HTMLElement, props: AppProps) {
 	const root = createRoot(target);
-	root.render(createElement(LoginPage, props));
+	root.render(createElement(App, props));
 	return () => root.unmount();
 }
