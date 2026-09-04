@@ -42,6 +42,8 @@ export type TravelApplication = {
 	content: ApplicationContent;
 	status: ApplicationStatus;
 	createdAt: string;
+	comment?: string;
+	processedAt?: string;
 };
 
 export type FieldIssue = {

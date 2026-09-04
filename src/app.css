@@ -478,7 +478,8 @@ body {
 
 @media (max-width: 640px) {
 	.field-row,
-	.steps {
+	.steps,
+	.detail-actions {
 		grid-template-columns: 1fr;
 	}
 
@@ -577,11 +578,10 @@ body {
 }
 
 .apply-table tbody tr {
-	cursor: pointer;
+	cursor: default;
 }
 
-.apply-table tbody tr:hover,
-.apply-table tbody tr.is-open {
+.apply-table tbody tr:hover {
 	background: #f3fbf9;
 }
 
@@ -637,6 +637,29 @@ body {
 .detail-row dd {
 	margin: 0;
 	white-space: pre-wrap;
+}
+
+.detail-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 8px;
+}
+
+.detail-actions {
+	grid-template-columns: 1fr 1fr 1fr;
+}
+
+.apply-card .actions button.danger {
+	background: #fef2f2;
+	color: #b91c1c;
+}
+
+.process-box {
+	margin-top: 8px;
+	padding-top: 8px;
+	border-top: 1px solid #eef2f5;
 }
 
 @media (max-width: 800px) {

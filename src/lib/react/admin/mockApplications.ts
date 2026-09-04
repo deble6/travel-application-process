@@ -39,7 +39,9 @@ export const MOCK_APPLICATIONS: TravelApplication[] = [
 			budget: '2800'
 		},
 		status: 'approved',
-		createdAt: '2026-08-12T09:10:00.000Z'
+		createdAt: '2026-08-12T09:10:00.000Z',
+		comment: '同意参加培训',
+		processedAt: '2026-08-13T02:30:00.000Z'
 	},
 	{
 		id: 'a-003',
@@ -79,6 +81,8 @@ export const MOCK_APPLICATIONS: TravelApplication[] = [
 			budget: '1800'
 		},
 		status: 'rejected',
-		createdAt: '2026-07-01T08:05:00.000Z'
+		createdAt: '2026-07-01T08:05:00.000Z',
+		comment: '费用说明不足，请补充后再提交',
+		processedAt: '2026-07-02T02:00:00.000Z'
 	}
 ];

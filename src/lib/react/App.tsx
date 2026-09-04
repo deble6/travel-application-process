@@ -1,6 +1,6 @@
 import type { SessionUser } from './types';
 import LoginPage from './LoginPage';
-import AdminList from './admin/AdminList';
+import AdminPage from './admin/AdminPage';
 
 type LoginForm = {
 	message?: string;
@@ -36,7 +36,7 @@ function AdminHome({ user }: { user: SessionUser }) {
 				</div>
 			</header>
 			<main className="app-main">
-				<AdminList />
+				<AdminPage />
 			</main>
 		</div>
 	);
