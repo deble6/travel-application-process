@@ -7,8 +7,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 		redirect(303, '/apply');
 	}
 
+	if (locals.user?.role === 'admin') {
+		redirect(303, '/admin');
+	}
+
 	return {
-		user: locals.user ?? null
+		user: null
 	};
 };
 
@@ -50,7 +54,7 @@ export const actions: Actions = {
 			}
 		);
 
-		redirect(303, user.role === 'user' ? '/apply' : '/');
+		redirect(303, user.role === 'user' ? '/apply' : '/admin');
 	},
 
 	logout: async ({ cookies }) => {

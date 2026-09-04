@@ -4,24 +4,12 @@ import { formatTime, STATUS_TEXT } from './status';
 
 type Props = {
 	item: TravelApplication;
-	onBack: () => void;
-	onApprove: (id: string, comment: string) => void;
-	onReject: (id: string, comment: string) => void;
-	onReopen: (id: string) => void;
+	message?: string;
 };
 
-export default function AdminDetail({ item, onBack, onApprove, onReject, onReopen }: Props) {
-	const [rejecting, setRejecting] = useState(false);
+export default function AdminDetail({ item, message }: Props) {
+	const [rejecting, setRejecting] = useState(Boolean(message));
 	const [comment, setComment] = useState('');
-
-	function submitApprove() {
-		onApprove(item.id, comment.trim() || '同意出差');
-	}
-
-	function submitReject() {
-		if (!comment.trim()) return;
-		onReject(item.id, comment.trim());
-	}
 
 	return (
 		<div className="apply-card preview-card">
@@ -32,6 +20,8 @@ export default function AdminDetail({ item, onBack, onApprove, onReject, onReope
 				</div>
 				<span className={`status-badge status-${item.status}`}>{STATUS_TEXT[item.status]}</span>
 			</div>
+
+			{message ? <p className="error">{message}</p> : null}
 
 			<section className="preview-section">
 				<header>
@@ -116,10 +106,12 @@ export default function AdminDetail({ item, onBack, onApprove, onReject, onReope
 			) : null}
 
 			{item.status === 'pending' && rejecting ? (
-				<div className="process-box">
+				<form className="process-box" method="POST" action="?/reject" data-sveltekit-reload="">
+					<input type="hidden" name="id" value={item.id} />
 					<label className="field">
 						<span>驳回原因</span>
 						<textarea
+							name="comment"
 							rows={3}
 							value={comment}
 							placeholder="请填写驳回原因"
@@ -130,29 +122,31 @@ export default function AdminDetail({ item, onBack, onApprove, onReject, onReope
 						<button type="button" className="btn secondary" onClick={() => setRejecting(false)}>
 							取消
 						</button>
-						<button type="button" className="danger" disabled={!comment.trim()} onClick={submitReject}>
+						<button type="submit" className="danger" disabled={!comment.trim()}>
 							确认驳回
 						</button>
 					</div>
-				</div>
+				</form>
 			) : (
 				<div className={`actions ${item.status === 'pending' ? 'detail-actions' : ''}`}>
-					<button type="button" className="btn secondary" onClick={onBack}>
+					<a className="btn secondary" href="/admin" data-sveltekit-reload="">
 						返回列表
-					</button>
+					</a>
 					{item.status === 'pending' ? (
 						<>
 							<button type="button" className="danger" onClick={() => setRejecting(true)}>
 								驳回
 							</button>
-							<button type="button" onClick={submitApprove}>
-								通过
-							</button>
+							<form method="POST" action="?/approve" data-sveltekit-reload="">
+								<input type="hidden" name="id" value={item.id} />
+								<button type="submit">通过</button>
+							</form>
 						</>
 					) : (
-						<button type="button" onClick={() => onReopen(item.id)}>
-							退回待审批
-						</button>
+						<form method="POST" action="?/reopen" data-sveltekit-reload="">
+							<input type="hidden" name="id" value={item.id} />
+							<button type="submit">退回待审批</button>
+						</form>
 					)}
 				</div>
 			)}

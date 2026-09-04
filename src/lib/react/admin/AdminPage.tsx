@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { ApplicationStatus, TravelApplication } from '../types';
-import { MOCK_APPLICATIONS } from './mockApplications';
+import type { ApplicationStatus, SessionUser, TravelApplication } from '../types';
 import { formatTime, STATUS_TEXT } from './status';
 import AdminDetail from './AdminDetail';
 
@@ -11,138 +10,130 @@ const FILTERS: { id: 'all' | ApplicationStatus; label: string }[] = [
 	{ id: 'rejected', label: '已驳回' }
 ];
 
-export default function AdminPage() {
-	const [items, setItems] = useState<TravelApplication[]>(MOCK_APPLICATIONS);
+type Props = {
+	user: SessionUser;
+	applications: TravelApplication[];
+	selectedId: string;
+	form?: { message?: string; id?: string } | null;
+};
+
+export default function AdminPage({ user, applications, selectedId, form }: Props) {
 	const [filter, setFilter] = useState<'all' | ApplicationStatus>('all');
-	const [selectedId, setSelectedId] = useState<string | null>(null);
 
 	const visible = useMemo(
-		() => (filter === 'all' ? items : items.filter((item) => item.status === filter)),
-		[items, filter]
+		() => (filter === 'all' ? applications : applications.filter((item) => item.status === filter)),
+		[applications, filter]
 	);
 
 	const counts = useMemo(
 		() => ({
-			all: items.length,
-			pending: items.filter((item) => item.status === 'pending').length,
-			approved: items.filter((item) => item.status === 'approved').length,
-			rejected: items.filter((item) => item.status === 'rejected').length
+			all: applications.length,
+			pending: applications.filter((item) => item.status === 'pending').length,
+			approved: applications.filter((item) => item.status === 'approved').length,
+			rejected: applications.filter((item) => item.status === 'rejected').length
 		}),
-		[items]
+		[applications]
 	);
 
-	const selected = items.find((item) => item.id === selectedId) ?? null;
-
-	function updateItem(id: string, patch: Partial<TravelApplication>) {
-		setItems((current) => current.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-	}
-
-	function approve(id: string, comment: string) {
-		updateItem(id, {
-			status: 'approved',
-			comment,
-			processedAt: new Date().toISOString()
-		});
-	}
-
-	function reject(id: string, comment: string) {
-		updateItem(id, {
-			status: 'rejected',
-			comment,
-			processedAt: new Date().toISOString()
-		});
-	}
-
-	function reopen(id: string) {
-		updateItem(id, {
-			status: 'pending',
-			comment: '',
-			processedAt: undefined
-		});
-	}
-
-	if (selected) {
-		return (
-			<AdminDetail
-				item={selected}
-				onBack={() => setSelectedId(null)}
-				onApprove={approve}
-				onReject={reject}
-				onReopen={reopen}
-			/>
-		);
-	}
+	const selected = applications.find((item) => item.id === selectedId) ?? null;
 
 	return (
-		<div className="admin-page">
-			<div className="admin-head">
-				<div>
-					<h1>申请列表</h1>
-					<p className="subtitle">查看申请详情，并处理当前流程状态。</p>
+		<div className="app-shell">
+			<header className="topbar">
+				<strong>差旅申请系统</strong>
+				<div className="topbar-right">
+					<span>
+						{user.name} · 管理员
+					</span>
+					<form method="POST" action="?/logout" data-sveltekit-reload="">
+						<button className="btn secondary header-logout" type="submit">
+							退出登录
+						</button>
+					</form>
 				</div>
-			</div>
+			</header>
+			<main className="app-main">
+				{selected ? (
+					<AdminDetail item={selected} message={form?.message} />
+				) : (
+					<div className="admin-page">
+						<div className="admin-head">
+							<div>
+								<h1>申请列表</h1>
+								<p className="subtitle">查看申请详情，并处理当前流程状态。</p>
+							</div>
+						</div>
 
-			<div className="filter-tabs">
-				{FILTERS.map((item) => (
-					<button
-						key={item.id}
-						type="button"
-						className={filter === item.id ? 'active' : ''}
-						onClick={() => setFilter(item.id)}
-					>
-						{item.label}
-						<span>{counts[item.id]}</span>
-					</button>
-				))}
-			</div>
+						{form?.message ? <p className="error">{form.message}</p> : null}
 
-			{visible.length === 0 ? (
-				<div className="apply-card home-card">
-					<h1>暂无申请</h1>
-					<p className="subtitle">当前筛选条件下没有差旅申请。</p>
-				</div>
-			) : (
-				<div className="list-card">
-					<table className="apply-table">
-						<thead>
-							<tr>
-								<th>申请人</th>
-								<th>部门</th>
-								<th>目的地</th>
-								<th>出行类型</th>
-								<th>行程日期</th>
-								<th>状态</th>
-								<th>提交时间</th>
-								<th>操作</th>
-							</tr>
-						</thead>
-						<tbody>
-							{visible.map((item) => (
-								<tr key={item.id}>
-									<td>{item.applicant.name}</td>
-									<td>{item.applicant.department}</td>
-									<td>{item.content.destination}</td>
-									<td>{item.content.tripType}</td>
-									<td>
-										{item.content.startDate} ~ {item.content.endDate}
-									</td>
-									<td>
-										<span className={`status-badge status-${item.status}`}>
-											{STATUS_TEXT[item.status]}
-										</span>
-									</td>
-									<td>{formatTime(item.createdAt)}</td>
-									<td>
-										<button type="button" className="link-btn" onClick={() => setSelectedId(item.id)}>
-											查看
-										</button>
-									</td>
-								</tr>
+						<div className="filter-tabs">
+							{FILTERS.map((item) => (
+								<button
+									key={item.id}
+									type="button"
+									className={filter === item.id ? 'active' : ''}
+									onClick={() => setFilter(item.id)}
+								>
+									{item.label}
+									<span>{counts[item.id]}</span>
+								</button>
 							))}
-						</tbody>
-					</table>
-				</div>
-			)}
+						</div>
+
+						{visible.length === 0 ? (
+							<div className="apply-card home-card">
+								<h1>暂无申请</h1>
+								<p className="subtitle">当前筛选条件下没有差旅申请。</p>
+							</div>
+						) : (
+							<div className="list-card">
+								<table className="apply-table">
+									<thead>
+										<tr>
+											<th>申请人</th>
+											<th>部门</th>
+											<th>目的地</th>
+											<th>出行类型</th>
+											<th>行程日期</th>
+											<th>状态</th>
+											<th>提交时间</th>
+											<th>操作</th>
+										</tr>
+									</thead>
+									<tbody>
+										{visible.map((item) => (
+											<tr key={item.id}>
+												<td>{item.applicant.name}</td>
+												<td>{item.applicant.department}</td>
+												<td>{item.content.destination}</td>
+												<td>{item.content.tripType}</td>
+												<td>
+													{item.content.startDate} ~ {item.content.endDate}
+												</td>
+												<td>
+													<span className={`status-badge status-${item.status}`}>
+														{STATUS_TEXT[item.status]}
+													</span>
+												</td>
+												<td>{formatTime(item.createdAt)}</td>
+												<td>
+													<a
+														className="link-btn"
+														href={`/admin?id=${encodeURIComponent(item.id)}`}
+														data-sveltekit-reload=""
+													>
+														查看
+													</a>
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						)}
+					</div>
+				)}
+			</main>
 		</div>
 	);
 }

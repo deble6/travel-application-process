@@ -1,23 +1,17 @@
 import {
 	emptyApplicant,
 	emptyContent,
+	type ApplicationStatus,
 	type ApplicantInfo,
 	type ApplicationContent,
+	type TravelApplication,
 	type TravelDraft
 } from '$lib/react/types';
 import { collectIssues } from '$lib/react/validate';
-
-export type TravelApplication = {
-	id: string;
-	username: string;
-	applicant: ApplicantInfo;
-	content: ApplicationContent;
-	status: 'pending';
-	createdAt: string;
-};
+import { MOCK_APPLICATIONS } from '$lib/react/admin/mockApplications';
 
 const drafts = new Map<string, TravelDraft>();
-const applications: TravelApplication[] = [];
+const applications: TravelApplication[] = MOCK_APPLICATIONS.map((item) => ({ ...item }));
 const submittedFlags = new Set<string>();
 
 export function getDraft(username: string, name: string): TravelDraft {
@@ -77,8 +71,8 @@ export function submitDraft(username: string, name: string) {
 	const application: TravelApplication = {
 		id: crypto.randomUUID(),
 		username,
-		applicant: draft.applicant,
-		content: draft.content,
+		applicant: { ...draft.applicant },
+		content: { ...draft.content },
 		status: 'pending',
 		createdAt: new Date().toISOString()
 	};
@@ -98,4 +92,24 @@ export function clearSubmitted(username: string) {
 
 export function listApplications() {
 	return applications;
+}
+
+export function getApplication(id: string) {
+	return applications.find((item) => item.id === id);
+}
+
+export function updateApplicationStatus(id: string, status: ApplicationStatus, comment = '') {
+	const item = getApplication(id);
+	if (!item) return null;
+
+	item.status = status;
+	if (status === 'pending') {
+		item.comment = '';
+		item.processedAt = undefined;
+	} else {
+		item.comment = comment;
+		item.processedAt = new Date().toISOString();
+	}
+
+	return item;
 }

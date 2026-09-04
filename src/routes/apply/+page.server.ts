@@ -25,7 +25,7 @@ const FOCUS_FIELDS = new Set([
 
 function requireUser(locals: App.Locals) {
 	if (!locals.user) redirect(303, '/');
-	if (locals.user.role !== 'user') redirect(303, '/');
+	if (locals.user.role !== 'user') redirect(303, locals.user.role === 'admin' ? '/admin' : '/');
 	return locals.user;
 }
 

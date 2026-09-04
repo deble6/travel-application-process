@@ -375,6 +375,22 @@ body {
 	cursor: not-allowed;
 }
 
+.apply-card .actions a.btn {
+	display: grid;
+	place-items: center;
+	text-decoration: none;
+	box-sizing: border-box;
+}
+
+.apply-card .actions form {
+	margin: 0;
+	min-width: 0;
+}
+
+a.link-btn {
+	text-decoration: none;
+}
+
 .issue-box {
 	margin-bottom: 18px;
 	padding: 12px 14px;
