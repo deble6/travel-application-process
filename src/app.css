@@ -510,6 +510,14 @@ a.link-btn {
 	margin: 0 auto;
 }
 
+.admin-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 8px;
+}
+
 .admin-head h1 {
 	margin: 0;
 	font-size: 24px;
@@ -517,14 +525,184 @@ a.link-btn {
 
 .admin-head .subtitle {
 	text-align: left;
-	margin-bottom: 16px;
+	margin-bottom: 0;
+}
+
+.view-tabs {
+	display: flex;
+	flex-shrink: 0;
+	gap: 8px;
+}
+
+.view-tabs button {
+	height: 36px;
+	padding: 0 14px;
+	border: 1px solid #d7e0e7;
+	border-radius: 10px;
+	background: #fff;
+	color: #4b5563;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.view-tabs button.active {
+	border-color: #2a9d8f;
+	background: #2a9d8f;
+	color: #fff;
+	font-weight: 600;
+}
+
+.stat-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+	margin: 16px 0;
+}
+
+.stat-card {
+	background: #fff;
+	border: 1px solid #e5edf2;
+	border-radius: 16px;
+	box-shadow: 0 18px 50px rgba(31, 54, 72, 0.08);
+	padding: 16px 18px;
+}
+
+.stat-card span {
+	display: block;
+	color: #6b7280;
+	font-size: 13px;
+}
+
+.stat-card strong {
+	display: block;
+	margin-top: 8px;
+	font-size: 28px;
+	line-height: 1.1;
+}
+
+.stat-card strong.money {
+	font-size: 22px;
+}
+
+.stat-card small {
+	display: block;
+	margin-top: 8px;
+	color: #9ca3af;
+	font-size: 12px;
+}
+
+.stat-card.pending strong {
+	color: #c2410c;
+}
+
+.stat-card.approved strong {
+	color: #1d7870;
+}
+
+.stat-card.rejected strong {
+	color: #b91c1c;
+}
+
+.stat-panels {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+}
+
+.stat-panel {
+	background: #fff;
+	border: 1px solid #e5edf2;
+	border-radius: 16px;
+	box-shadow: 0 18px 50px rgba(31, 54, 72, 0.08);
+	padding: 18px;
+}
+
+.stat-panel h2 {
+	margin: 0 0 14px;
+	font-size: 16px;
+}
+
+.stat-panel .subtitle {
+	text-align: left;
+	margin: 0;
+}
+
+.stat-bars {
+	display: grid;
+	gap: 12px;
+}
+
+.stat-bar-row {
+	display: grid;
+	grid-template-columns: 72px 1fr auto;
+	align-items: center;
+	gap: 10px;
+	font-size: 13px;
+}
+
+.stat-bar-row span {
+	color: #4b5563;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.stat-bar {
+	height: 10px;
+	border-radius: 999px;
+	background: #f3f4f6;
+	overflow: hidden;
+}
+
+.stat-bar i {
+	display: block;
+	height: 100%;
+	border-radius: inherit;
+	background: #2a9d8f;
+}
+
+.stat-bar i.bar-pending {
+	background: #f59e0b;
+}
+
+.stat-bar i.bar-approved {
+	background: #2a9d8f;
+}
+
+.stat-bar i.bar-rejected {
+	background: #ef4444;
+}
+
+.stat-bar-row strong {
+	min-width: 64px;
+	text-align: right;
+	font-size: 13px;
+}
+
+.stat-bar-row em {
+	margin-left: 6px;
+	color: #9ca3af;
+	font-style: normal;
+	font-weight: 500;
+}
+
+@media (max-width: 800px) {
+	.admin-head,
+	.stat-grid,
+	.stat-panels {
+		grid-template-columns: 1fr;
+	}
+
+	.admin-head {
+		flex-direction: column;
+	}
 }
 
 .filter-tabs {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
-	margin-bottom: 16px;
+	margin: 8px 0 16px;
 }
 
 .filter-tabs button {

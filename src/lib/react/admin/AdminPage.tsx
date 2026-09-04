@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { ApplicationStatus, SessionUser, TravelApplication } from '../types';
 import { formatTime, STATUS_TEXT } from './status';
 import AdminDetail from './AdminDetail';
+import AdminStats from './AdminStats';
 
 const FILTERS: { id: 'all' | ApplicationStatus; label: string }[] = [
 	{ id: 'all', label: '全部' },
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export default function AdminPage({ user, applications, selectedId, form }: Props) {
+	const [view, setView] = useState<'list' | 'stats'>('list');
 	const [filter, setFilter] = useState<'all' | ApplicationStatus>('all');
 
 	const visible = useMemo(
@@ -59,13 +61,37 @@ export default function AdminPage({ user, applications, selectedId, form }: Prop
 					<div className="admin-page">
 						<div className="admin-head">
 							<div>
-								<h1>申请列表</h1>
-								<p className="subtitle">查看申请详情，并处理当前流程状态。</p>
+								<h1>{view === 'stats' ? '统计报表' : '申请列表'}</h1>
+								<p className="subtitle">
+									{view === 'stats'
+										? '查看申请数量、审批情况和费用分布。'
+										: '查看申请详情，并处理当前流程状态。'}
+								</p>
+							</div>
+							<div className="view-tabs">
+								<button
+									type="button"
+									className={view === 'list' ? 'active' : ''}
+									onClick={() => setView('list')}
+								>
+									申请列表
+								</button>
+								<button
+									type="button"
+									className={view === 'stats' ? 'active' : ''}
+									onClick={() => setView('stats')}
+								>
+									统计报表
+								</button>
 							</div>
 						</div>
 
 						{form?.message ? <p className="error">{form.message}</p> : null}
 
+						{view === 'stats' ? <AdminStats applications={applications} /> : null}
+
+						{view === 'list' ? (
+							<>
 						<div className="filter-tabs">
 							{FILTERS.map((item) => (
 								<button
@@ -131,6 +157,8 @@ export default function AdminPage({ user, applications, selectedId, form }: Prop
 								</table>
 							</div>
 						)}
+							</>
+						) : null}
 					</div>
 				)}
 			</main>
