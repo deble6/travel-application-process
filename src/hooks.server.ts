@@ -6,7 +6,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (raw) {
 		try {
 			const user = JSON.parse(raw) as App.Locals['user'];
-			if (user?.username && (user.role === 'admin' || user.role === 'user')) {
+			if (
+				user?.username &&
+				(user.role === 'admin' || user.role === 'hr' || user.role === 'user')
+			) {
 				event.locals.user = user;
 			}
 		} catch {

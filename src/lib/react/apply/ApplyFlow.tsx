@@ -23,6 +23,19 @@ export default function ApplyFlow({ draft, focusField, issues = [] }: Props) {
 
 	return (
 		<div className="apply-wrap">
+			{draft.resubmitId ? (
+				<div className="edit-notice">
+					<p>
+						正在修改被驳回的申请。上次驳回原因：{draft.rejectComment?.trim() || '未填写'}
+					</p>
+					<form method="POST" action="?/cancelEdit" data-sveltekit-reload="">
+						<button type="submit" className="btn secondary">
+							取消修改
+						</button>
+					</form>
+				</div>
+			) : null}
+
 			<ol className="steps">
 				{STEPS.map((item, index) => (
 					<li key={item.id} className={step === item.id ? 'active' : stepIndex > index ? 'done' : ''}>

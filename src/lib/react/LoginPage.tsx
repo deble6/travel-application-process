@@ -5,7 +5,7 @@ type LoginForm = {
 };
 
 export default function LoginPage({ form }: { form?: LoginForm | null }) {
-	const selectedRole = form?.role === 'user' ? 'user' : 'admin';
+	const selectedRole = form?.role === 'user' || form?.role === 'hr' ? form.role : 'admin';
 
 	return (
 		<div className="login-page">
@@ -19,6 +19,10 @@ export default function LoginPage({ form }: { form?: LoginForm | null }) {
 					<label>
 						<input type="radio" name="role" value="admin" defaultChecked={selectedRole === 'admin'} />
 						管理员
+					</label>
+					<label>
+						<input type="radio" name="role" value="hr" defaultChecked={selectedRole === 'hr'} />
+						人事
 					</label>
 					<label>
 						<input type="radio" name="role" value="user" defaultChecked={selectedRole === 'user'} />
@@ -52,6 +56,8 @@ export default function LoginPage({ form }: { form?: LoginForm | null }) {
 					演示账号：
 					<br />
 					管理员 admin / 123456
+					<br />
+					人事 hr / 123456
 					<br />
 					用户 user / 123456
 				</p>

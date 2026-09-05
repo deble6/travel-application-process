@@ -1,5 +1,6 @@
 import type { TravelApplication } from '../types';
 import { formatTime, STATUS_TEXT } from '../admin/status';
+import ProcessHistory from '../admin/ProcessHistory';
 
 type Props = {
 	item: TravelApplication;
@@ -72,32 +73,18 @@ export default function MyDetail({ item }: Props) {
 				</dl>
 			</section>
 
-			{item.status !== 'pending' ? (
-				<section className="preview-section">
-					<header>
-						<h2>处理结果</h2>
-					</header>
-					<dl>
-						<div>
-							<dt>当前状态</dt>
-							<dd>{STATUS_TEXT[item.status]}</dd>
-						</div>
-						<div>
-							<dt>处理时间</dt>
-							<dd>{item.processedAt ? formatTime(item.processedAt) : '—'}</dd>
-						</div>
-						<div>
-							<dt>处理意见</dt>
-							<dd>{item.comment || '—'}</dd>
-						</div>
-					</dl>
-				</section>
-			) : null}
+			<ProcessHistory item={item} />
 
-			<div className="actions actions-one">
+			<div className={`actions ${item.status === 'rejected' ? '' : 'actions-one'}`}>
 				<a className="btn secondary" href="/apply?view=list" data-sveltekit-reload="">
 					返回列表
 				</a>
+				{item.status === 'rejected' ? (
+					<form method="POST" action="?/edit" data-sveltekit-reload="">
+						<input type="hidden" name="id" value={item.id} />
+						<button type="submit">修改后重新提交</button>
+					</form>
+				) : null}
 			</div>
 		</div>
 	);

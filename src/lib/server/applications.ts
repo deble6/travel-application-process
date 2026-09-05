@@ -1,9 +1,11 @@
 import {
+	canApprove,
 	emptyApplicant,
 	emptyContent,
 	type ApplicationStatus,
 	type ApplicantInfo,
 	type ApplicationContent,
+	type Role,
 	type TravelApplication,
 	type TravelDraft
 } from '$lib/react/types';
@@ -65,6 +67,21 @@ export function readContent(data: FormData): ApplicationContent {
 	};
 }
 
+export function startEditRejected(username: string, name: string, id: string) {
+	const item = getUserApplication(id, username);
+	if (!item || item.status !== 'rejected') return null;
+
+	saveDraft(username, {
+		step: 'applicant',
+		applicant: { ...item.applicant },
+		content: { ...item.content },
+		previewed: false,
+		resubmitId: item.id,
+		rejectComment: item.comment
+	});
+	return item;
+}
+
 export function submitDraft(username: string, name: string) {
 	const draft = getDraft(username, name);
 	const issues = collectIssues(draft);
@@ -72,12 +89,31 @@ export function submitDraft(username: string, name: string) {
 		return { ok: false as const, issues, draft };
 	}
 
+	if (draft.resubmitId) {
+		const item = getUserApplication(draft.resubmitId, username);
+		if (!item || item.status !== 'rejected') {
+			return { ok: false as const, issues, draft };
+		}
+
+		item.applicant = { ...draft.applicant };
+		item.content = { ...draft.content };
+		item.status = 'pending_hr';
+		item.comment = '';
+		item.processedAt = undefined;
+		item.hrComment = undefined;
+		item.hrProcessedAt = undefined;
+		item.createdAt = new Date().toISOString();
+		clearDraft(username, name);
+		submittedFlags.add(username);
+		return { ok: true as const, application: item };
+	}
+
 	const application: TravelApplication = {
 		id: crypto.randomUUID(),
 		username,
 		applicant: { ...draft.applicant },
 		content: { ...draft.content },
-		status: 'pending',
+		status: 'pending_hr',
 		createdAt: new Date().toISOString()
 	};
 	applications.unshift(application);
@@ -111,18 +147,40 @@ export function getUserApplication(id: string, username: string) {
 	return item?.username === username ? item : undefined;
 }
 
+export function approveApplication(id: string, role: Role, comment = '') {
+	const item = getApplication(id);
+	if (!item || !canApprove(role, item.status)) return null;
+
+	if (role === 'hr') {
+		item.status = 'pending_admin';
+		item.hrComment = comment || '人事同意';
+		item.hrProcessedAt = new Date().toISOString();
+		item.comment = '';
+		item.processedAt = undefined;
+		return item;
+	}
+
+	item.status = 'approved';
+	item.comment = comment || '同意出差';
+	item.processedAt = new Date().toISOString();
+	return item;
+}
+
+export function rejectApplication(id: string, role: Role, comment: string) {
+	const item = getApplication(id);
+	if (!item || !canApprove(role, item.status)) return null;
+
+	item.status = 'rejected';
+	item.comment = comment;
+	item.processedAt = new Date().toISOString();
+	return item;
+}
+
 export function updateApplicationStatus(id: string, status: ApplicationStatus, comment = '') {
 	const item = getApplication(id);
 	if (!item) return null;
-
 	item.status = status;
-	if (status === 'pending') {
-		item.comment = '';
-		item.processedAt = undefined;
-	} else {
-		item.comment = comment;
-		item.processedAt = new Date().toISOString();
-	}
-
+	item.comment = comment;
+	item.processedAt = status === 'approved' || status === 'rejected' ? new Date().toISOString() : undefined;
 	return item;
 }

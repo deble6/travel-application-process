@@ -1,4 +1,4 @@
-export type Role = 'admin' | 'user';
+export type Role = 'admin' | 'hr' | 'user';
 
 export type SessionUser = {
 	username: string;
@@ -27,13 +27,15 @@ export type TravelDraft = {
 	content: ApplicationContent;
 	step: ApplyStep;
 	previewed?: boolean;
+	resubmitId?: string;
+	rejectComment?: string;
 };
 
 export type ApplyStep = 'home' | 'applicant' | 'content' | 'preview' | 'done';
 
 export type FormSection = 'applicant' | 'content';
 
-export type ApplicationStatus = 'pending' | 'approved' | 'rejected';
+export type ApplicationStatus = 'pending_hr' | 'pending_admin' | 'approved' | 'rejected';
 
 export type TravelApplication = {
 	id: string;
@@ -44,6 +46,8 @@ export type TravelApplication = {
 	createdAt: string;
 	comment?: string;
 	processedAt?: string;
+	hrComment?: string;
+	hrProcessedAt?: string;
 };
 
 export type FieldIssue = {
@@ -55,6 +59,16 @@ export type FieldIssue = {
 
 export const DEPARTMENTS = ['技术部', '市场部', '财务部', '人事部', '行政部'];
 export const TRIP_TYPES = ['公务出差', '培训学习', '会议交流', '其他'];
+
+export const ROLE_TEXT: Record<Role, string> = {
+	admin: '管理员',
+	hr: '人事',
+	user: '用户'
+};
+
+export function canApprove(role: Role, status: ApplicationStatus) {
+	return (role === 'hr' && status === 'pending_hr') || (role === 'admin' && status === 'pending_admin');
+}
 
 export function emptyApplicant(name = ''): ApplicantInfo {
 	return { name, department: '', phone: '', jobTitle: '' };

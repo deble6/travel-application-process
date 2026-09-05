@@ -35,14 +35,22 @@ export default function MyList({ applications }: Props) {
 								<span className={`status-badge status-${item.status}`}>{STATUS_TEXT[item.status]}</span>
 							</td>
 							<td>{formatTime(item.createdAt)}</td>
-							<td>
+							<td className="table-actions">
 								<a
-									className="link-btn"
+									className="link-btn action-view"
 									href={`/apply?view=list&id=${encodeURIComponent(item.id)}`}
 									data-sveltekit-reload=""
 								>
 									查看
 								</a>
+								{item.status === 'rejected' ? (
+									<form method="POST" action="?/edit" data-sveltekit-reload="">
+										<input type="hidden" name="id" value={item.id} />
+										<button type="submit" className="link-btn action-approve">
+											修改
+										</button>
+									</form>
+								) : null}
 							</td>
 						</tr>
 					))}

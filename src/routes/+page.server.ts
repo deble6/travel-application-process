@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		redirect(303, '/apply');
 	}
 
-	if (locals.user?.role === 'admin') {
+	if (locals.user?.role === 'admin' || locals.user?.role === 'hr') {
 		redirect(303, '/admin');
 	}
 
@@ -27,7 +27,7 @@ export const actions: Actions = {
 			return fail(400, { message: '请填写账号、密码并选择角色', username, role });
 		}
 
-		if (role !== 'admin' && role !== 'user') {
+		if (role !== 'admin' && role !== 'hr' && role !== 'user') {
 			return fail(400, { message: '角色无效', username, role });
 		}
 

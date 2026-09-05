@@ -74,7 +74,7 @@ export default function Preview({ draft }: Props) {
 					返回修改
 				</button>
 				<button type="submit" formAction="?/submit">
-					确认提交
+					{draft.resubmitId ? '重新提交' : '确认提交'}
 				</button>
 			</div>
 		</form>

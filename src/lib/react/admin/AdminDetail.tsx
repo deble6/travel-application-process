@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import type { TravelApplication } from '../types';
+import { canApprove, type Role, type TravelApplication } from '../types';
 import { formatTime, STATUS_TEXT } from './status';
+import ProcessHistory from './ProcessHistory';
 
 type Props = {
 	item: TravelApplication;
 	mode: 'view' | 'approve';
+	role: Role;
 	message?: string;
 };
 
-export default function AdminDetail({ item, mode, message }: Props) {
-	const canProcess = mode === 'approve' && item.status === 'pending';
+export default function AdminDetail({ item, mode, role, message }: Props) {
+	const canProcess = mode === 'approve' && canApprove(role, item.status);
 	const [rejecting, setRejecting] = useState(Boolean(message) && canProcess);
 	const [comment, setComment] = useState('');
 
@@ -81,27 +83,7 @@ export default function AdminDetail({ item, mode, message }: Props) {
 				</dl>
 			</section>
 
-			{item.status !== 'pending' ? (
-				<section className="preview-section">
-					<header>
-						<h2>处理结果</h2>
-					</header>
-					<dl>
-						<div>
-							<dt>当前状态</dt>
-							<dd>{STATUS_TEXT[item.status]}</dd>
-						</div>
-						<div>
-							<dt>处理时间</dt>
-							<dd>{item.processedAt ? formatTime(item.processedAt) : '—'}</dd>
-						</div>
-						<div>
-							<dt>处理意见</dt>
-							<dd>{item.comment || '—'}</dd>
-						</div>
-					</dl>
-				</section>
-			) : null}
+			<ProcessHistory item={item} />
 
 			{canProcess && rejecting ? (
 				<form className="process-box" method="POST" action="?/reject" data-sveltekit-reload="">

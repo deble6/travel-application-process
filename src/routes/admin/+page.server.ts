@@ -1,17 +1,18 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import {
+	approveApplication,
 	getApplication,
 	listApplications,
-	updateApplicationStatus
+	rejectApplication
 } from '$lib/server/applications';
 import { buildReport } from '$lib/react/admin/stats';
+import { canApprove } from '$lib/react/types';
 
-function requireAdmin(locals: App.Locals) {
+function requireStaff(locals: App.Locals) {
 	if (!locals.user) redirect(303, '/');
-	if (locals.user.role !== 'admin') {
-		redirect(303, locals.user.role === 'user' ? '/apply' : '/');
-	}
+	if (locals.user.role === 'user') redirect(303, '/apply');
+	if (locals.user.role !== 'admin' && locals.user.role !== 'hr') redirect(303, '/');
 	return locals.user;
 }
 
@@ -20,7 +21,7 @@ function detailUrl(id: string) {
 }
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-	const user = requireAdmin(locals);
+	const user = requireStaff(locals);
 	const id = url.searchParams.get('id') ?? '';
 	const selected = id ? getApplication(id) : undefined;
 	const applications = listApplications();
@@ -42,27 +43,32 @@ export const actions: Actions = {
 	},
 
 	approve: async ({ locals, request }) => {
-		requireAdmin(locals);
+		const user = requireStaff(locals);
 		const data = await request.formData();
 		const id = String(data.get('id') ?? '');
 		const current = getApplication(id);
 		if (!current) return fail(404, { message: '申请不存在' });
-		if (current.status !== 'pending') return fail(400, { message: '已处理的申请不能修改' });
-		const comment = String(data.get('comment') ?? '').trim() || '同意出差';
-		updateApplicationStatus(id, 'approved', comment);
+		if (!canApprove(user.role, current.status)) {
+			return fail(400, { message: '当前角色不能审批该申请' });
+		}
+		const comment =
+			String(data.get('comment') ?? '').trim() || (user.role === 'hr' ? '人事同意' : '同意出差');
+		approveApplication(id, user.role, comment);
 		redirect(303, detailUrl(id));
 	},
 
 	reject: async ({ locals, request }) => {
-		requireAdmin(locals);
+		const user = requireStaff(locals);
 		const data = await request.formData();
 		const id = String(data.get('id') ?? '');
 		const current = getApplication(id);
 		if (!current) return fail(404, { message: '申请不存在' });
-		if (current.status !== 'pending') return fail(400, { message: '已处理的申请不能修改' });
+		if (!canApprove(user.role, current.status)) {
+			return fail(400, { message: '当前角色不能审批该申请' });
+		}
 		const comment = String(data.get('comment') ?? '').trim();
 		if (!comment) return fail(400, { message: '请填写驳回原因', id });
-		updateApplicationStatus(id, 'rejected', comment);
+		rejectApplication(id, user.role, comment);
 		redirect(303, detailUrl(id));
 	}
 };

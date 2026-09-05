@@ -18,7 +18,7 @@ export const MOCK_APPLICATIONS: TravelApplication[] = [
 			purpose: '参加客户项目评审会议',
 			budget: '3500'
 		},
-		status: 'pending',
+		status: 'pending_hr',
 		createdAt: '2026-09-04T10:20:00.000Z'
 	},
 	{
@@ -40,6 +40,8 @@ export const MOCK_APPLICATIONS: TravelApplication[] = [
 		},
 		status: 'approved',
 		createdAt: '2026-08-12T09:10:00.000Z',
+		hrComment: '人事同意参加培训',
+		hrProcessedAt: '2026-08-12T14:00:00.000Z',
 		comment: '同意参加培训',
 		processedAt: '2026-08-13T02:30:00.000Z'
 	},
@@ -60,17 +62,19 @@ export const MOCK_APPLICATIONS: TravelApplication[] = [
 			purpose: '参加渠道合作洽谈会',
 			budget: '4200'
 		},
-		status: 'pending',
-		createdAt: '2026-09-03T15:40:00.000Z'
+		status: 'pending_admin',
+		createdAt: '2026-09-03T15:40:00.000Z',
+		hrComment: '人事同意出差',
+		hrProcessedAt: '2026-09-04T01:10:00.000Z'
 	},
 	{
 		id: 'a-004',
-		username: 'qian',
+		username: 'user',
 		applicant: {
-			name: '钱财务',
-			department: '财务部',
-			phone: '13700137000',
-			jobTitle: '会计'
+			name: '李员工',
+			department: '技术部',
+			phone: '13800138000',
+			jobTitle: '工程师'
 		},
 		content: {
 			destination: '成都',

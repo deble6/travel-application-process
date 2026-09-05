@@ -1,5 +1,5 @@
-import { DEPARTMENTS, type TravelApplication } from '../types';
-import { STATUS_TEXT } from './status';
+import { DEPARTMENTS, type ApplicationStatus, type TravelApplication } from '../types';
+import { STATUS_ORDER, STATUS_TEXT } from './status';
 
 export type StatRow = {
 	name: string;
@@ -11,6 +11,8 @@ export type StatRow = {
 export type AdminReport = {
 	total: number;
 	pending: number;
+	pendingHr: number;
+	pendingAdmin: number;
 	approved: number;
 	rejected: number;
 	processed: number;
@@ -49,15 +51,28 @@ function groupRows(applications: TravelApplication[], getName: (item: TravelAppl
 		.sort((a, b) => b.count - a.count || b.amount - a.amount);
 }
 
+function statusRow(applications: TravelApplication[], status: ApplicationStatus): StatRow {
+	const items = applications.filter((item) => item.status === status);
+	return {
+		name: STATUS_TEXT[status],
+		count: items.length,
+		percent: applications.length ? Math.round((items.length / applications.length) * 100) : 0,
+		amount: items.reduce((sum, item) => sum + parseBudget(item.content.budget), 0)
+	};
+}
+
 export function buildReport(applications: TravelApplication[]): AdminReport {
-	const pending = applications.filter((item) => item.status === 'pending').length;
+	const pendingHr = applications.filter((item) => item.status === 'pending_hr').length;
+	const pendingAdmin = applications.filter((item) => item.status === 'pending_admin').length;
 	const approved = applications.filter((item) => item.status === 'approved').length;
 	const rejected = applications.filter((item) => item.status === 'rejected').length;
 	const processed = approved + rejected;
 
 	return {
 		total: applications.length,
-		pending,
+		pending: pendingHr + pendingAdmin,
+		pendingHr,
+		pendingAdmin,
 		approved,
 		rejected,
 		processed,
@@ -66,15 +81,7 @@ export function buildReport(applications: TravelApplication[]): AdminReport {
 		budgetApproved: applications
 			.filter((item) => item.status === 'approved')
 			.reduce((sum, item) => sum + parseBudget(item.content.budget), 0),
-		byStatus: (['pending', 'approved', 'rejected'] as const).map((status) => {
-			const items = applications.filter((item) => item.status === status);
-			return {
-				name: STATUS_TEXT[status],
-				count: items.length,
-				percent: applications.length ? Math.round((items.length / applications.length) * 100) : 0,
-				amount: items.reduce((sum, item) => sum + parseBudget(item.content.budget), 0)
-			};
-		}),
+		byStatus: STATUS_ORDER.map((status) => statusRow(applications, status)),
 		byDepartment: DEPARTMENTS.map((name) => {
 			const items = applications.filter((item) => item.applicant.department === name);
 			return {

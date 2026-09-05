@@ -1,6 +1,5 @@
+import { STATUS_ORDER } from './status';
 import { formatMoney, formatPercent, type AdminReport, type StatRow } from './stats';
-
-const STATUS_CLASS = ['pending', 'approved', 'rejected'] as const;
 
 type Props = {
 	report: AdminReport;
@@ -16,7 +15,7 @@ function BarList({ rows, tone }: { rows: StatRow[]; tone?: 'status' }) {
 					<span>{row.name}</span>
 					<div className="stat-bar">
 						<i
-							className={tone === 'status' ? `bar-${STATUS_CLASS[index] ?? 'pending'}` : ''}
+							className={tone === 'status' ? `bar-${STATUS_ORDER[index] ?? 'pending_hr'}` : ''}
 							style={{ width: `${Math.max((row.count / max) * 100, row.count ? 8 : 0)}%` }}
 						/>
 					</div>
@@ -38,9 +37,13 @@ export default function AdminStats({ report }: Props) {
 					<span>全部申请</span>
 					<strong>{report.total}</strong>
 				</div>
-				<div className="stat-card pending">
-					<span>待审批</span>
-					<strong>{report.pending}</strong>
+				<div className="stat-card pending_hr">
+					<span>待人事审批</span>
+					<strong>{report.pendingHr}</strong>
+				</div>
+				<div className="stat-card pending_admin">
+					<span>待管理员审批</span>
+					<strong>{report.pendingAdmin}</strong>
 				</div>
 				<div className="stat-card approved">
 					<span>已通过</span>

@@ -1,6 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import {
+	clearDraft,
 	clearSubmitted,
 	getDraft,
 	getUserApplication,
@@ -9,6 +10,7 @@ import {
 	readApplicant,
 	readContent,
 	saveDraft,
+	startEditRejected,
 	submitDraft
 } from '$lib/server/applications';
 import type { ApplyStep } from '$lib/react/types';
@@ -28,7 +30,9 @@ const FOCUS_FIELDS = new Set([
 
 function requireUser(locals: App.Locals) {
 	if (!locals.user) redirect(303, '/');
-	if (locals.user.role !== 'user') redirect(303, locals.user.role === 'admin' ? '/admin' : '/');
+	if (locals.user.role !== 'user') {
+		redirect(303, locals.user.role === 'admin' || locals.user.role === 'hr' ? '/admin' : '/');
+	}
 	return locals.user;
 }
 
@@ -132,5 +136,20 @@ export const actions: Actions = {
 			return fail(400, { issues: result.issues });
 		}
 		redirect(303, '/apply?view=list');
+	},
+
+	edit: async ({ locals, request }) => {
+		const user = requireUser(locals);
+		const data = await request.formData();
+		const id = String(data.get('id') ?? '');
+		const item = startEditRejected(user.username, user.name, id);
+		if (!item) return fail(400, { message: '只能修改被驳回的申请' });
+		redirect(303, '/apply');
+	},
+
+	cancelEdit: async ({ locals }) => {
+		const user = requireUser(locals);
+		clearDraft(user.username, user.name);
+		redirect(303, '/apply');
 	}
 };
