@@ -1,10 +1,11 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import {
-	clearDraft,
 	clearSubmitted,
 	getDraft,
+	getUserApplication,
 	hasJustSubmitted,
+	listUserApplications,
 	readApplicant,
 	readContent,
 	saveDraft,
@@ -41,12 +42,21 @@ function applyRedirect(field?: string) {
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const user = requireUser(locals);
 	const focus = url.searchParams.get('focus') ?? '';
+	const id = url.searchParams.get('id') ?? '';
+	const selected = id ? getUserApplication(id, user.username) : undefined;
+	const submitted = hasJustSubmitted(user.username);
+	if (submitted) clearSubmitted(user.username);
+
+	const wantsList = Boolean(id) || url.searchParams.get('view') === 'list';
 
 	return {
 		user,
 		draft: getDraft(user.username, user.name),
-		submitted: hasJustSubmitted(user.username),
-		focusField: FOCUS_FIELDS.has(focus) ? focus : ''
+		applications: listUserApplications(user.username),
+		selectedId: selected?.id ?? '',
+		view: wantsList ? 'list' : 'form',
+		focusField: FOCUS_FIELDS.has(focus) ? focus : '',
+		submitted
 	};
 };
 
@@ -54,13 +64,6 @@ export const actions: Actions = {
 	logout: async ({ cookies }) => {
 		cookies.delete('session', { path: '/' });
 		redirect(303, '/');
-	},
-
-	start: async ({ locals }) => {
-		const user = requireUser(locals);
-		clearDraft(user.username, user.name);
-		clearSubmitted(user.username);
-		redirect(303, '/apply');
 	},
 
 	saveApplicant: async ({ locals, request }) => {
@@ -128,6 +131,6 @@ export const actions: Actions = {
 			saveDraft(user.username, draft);
 			return fail(400, { issues: result.issues });
 		}
-		redirect(303, '/apply');
+		redirect(303, '/apply?view=list');
 	}
 };

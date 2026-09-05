@@ -98,8 +98,17 @@ export function listApplications() {
 	return applications;
 }
 
+export function listUserApplications(username: string) {
+	return applications.filter((item) => item.username === username);
+}
+
 export function getApplication(id: string) {
 	return applications.find((item) => item.id === id);
+}
+
+export function getUserApplication(id: string, username: string) {
+	const item = getApplication(id);
+	return item?.username === username ? item : undefined;
 }
 
 export function updateApplicationStatus(id: string, status: ApplicationStatus, comment = '') {

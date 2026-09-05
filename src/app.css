@@ -817,6 +817,21 @@ a.link-btn {
 	font-size: 14px;
 }
 
+.toast {
+	position: fixed;
+	top: 24px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 50;
+	padding: 12px 22px;
+	border-radius: 10px;
+	background: #1d7870;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	box-shadow: 0 12px 32px rgba(31, 54, 72, 0.2);
+}
+
 .status-badge {
 	display: inline-block;
 	padding: 4px 10px;

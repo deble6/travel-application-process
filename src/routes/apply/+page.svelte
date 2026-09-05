@@ -13,6 +13,9 @@
 		const props = {
 			user: data.user,
 			draft: data.draft,
+			applications: data.applications,
+			selectedId: data.selectedId,
+			view: data.view,
 			submitted: data.submitted,
 			focusField: data.focusField,
 			form
