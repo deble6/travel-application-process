@@ -135,22 +135,23 @@ export default function AdminPage({ user, applications, selectedId, view, report
 												</td>
 												<td>{formatTime(item.createdAt)}</td>
 												<td className="table-actions">
-													<a
-														className="link-btn"
-														href={`/admin?id=${encodeURIComponent(item.id)}`}
-														data-sveltekit-reload=""
-													>
-														查看
-													</a>
 													{item.status === 'pending' ? (
 														<a
-															className="link-btn"
+															className="link-btn action-approve"
 															href={`/admin?id=${encodeURIComponent(item.id)}&mode=approve`}
 															data-sveltekit-reload=""
 														>
 															审批
 														</a>
-													) : null}
+													) : (
+														<a
+															className="link-btn action-view"
+															href={`/admin?id=${encodeURIComponent(item.id)}`}
+															data-sveltekit-reload=""
+														>
+															查看
+														</a>
+													)}
 												</td>
 											</tr>
 										))}

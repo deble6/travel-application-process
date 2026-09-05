@@ -5,5 +5,8 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	esbuild: {
 		jsx: 'automatic'
+	},
+	server: {
+		open: '/'
 	}
 });

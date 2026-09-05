@@ -47,7 +47,7 @@ export default function ApplyPage({
 					<div className="admin-head">
 						<div className="view-tabs">
 							<a className={view === 'form' ? 'active' : ''} href="/apply" data-sveltekit-reload="">
-								申请填写
+								发起申请
 							</a>
 							<a
 								className={view === 'list' ? 'active' : ''}

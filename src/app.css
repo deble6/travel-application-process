@@ -810,6 +810,26 @@ a.link-btn {
 	gap: 12px;
 }
 
+.table-actions .action-view,
+.table-actions .action-approve {
+	display: inline-flex;
+	align-items: center;
+	height: 28px;
+	padding: 0 10px;
+	border-radius: 8px;
+	text-decoration: none;
+}
+
+.table-actions .action-view {
+	background: #e8f6f4;
+	color: #1d7870;
+}
+
+.table-actions .action-approve {
+	background: #fff7ed;
+	color: #c2410c;
+}
+
 .empty-list {
 	padding: 36px 16px;
 	text-align: center;
