@@ -1,33 +1,10 @@
-import { STATUS_ORDER } from './status';
-import { formatMoney, formatPercent, type AdminReport, type StatRow } from './stats';
+import { formatMoney, formatPercent, type AdminReport } from './stats';
+import { buildBarChartOption, buildStatusChartOption } from './charts';
+import EChart from './EChart';
 
 type Props = {
 	report: AdminReport;
 };
-
-function BarList({ rows, tone }: { rows: StatRow[]; tone?: 'status' }) {
-	const max = Math.max(...rows.map((row) => row.count), 1);
-
-	return (
-		<div className="stat-bars">
-			{rows.map((row, index) => (
-				<div className="stat-bar-row" key={row.name}>
-					<span>{row.name}</span>
-					<div className="stat-bar">
-						<i
-							className={tone === 'status' ? `bar-${STATUS_ORDER[index] ?? 'pending_hr'}` : ''}
-							style={{ width: `${Math.max((row.count / max) * 100, row.count ? 8 : 0)}%` }}
-						/>
-					</div>
-					<strong>
-						{row.count}
-						<em>{row.percent}%</em>
-					</strong>
-				</div>
-			))}
-		</div>
-	);
-}
 
 export default function AdminStats({ report }: Props) {
 	return (
@@ -68,15 +45,18 @@ export default function AdminStats({ report }: Props) {
 			<div className="stat-panels">
 				<section className="stat-panel">
 					<h2>状态分布</h2>
-					<BarList rows={report.byStatus} tone="status" />
+					<EChart testId="echart-status" option={buildStatusChartOption(report.byStatus)} />
 				</section>
 				<section className="stat-panel">
 					<h2>部门申请</h2>
-					<BarList rows={report.byDepartment} />
+					<EChart testId="echart-department" option={buildBarChartOption(report.byDepartment)} />
 				</section>
 				<section className="stat-panel">
 					<h2>出行类型</h2>
-					<BarList rows={report.byTripType} />
+					<EChart
+						testId="echart-tripType"
+						option={buildBarChartOption(report.byTripType, '#3b82f6')}
+					/>
 				</section>
 			</div>
 		</div>

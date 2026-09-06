@@ -12,9 +12,23 @@ import {
 import { collectIssues } from '$lib/react/validate';
 import { MOCK_APPLICATIONS } from '$lib/react/admin/mockApplications';
 
+function cloneApplication(item: TravelApplication): TravelApplication {
+	return {
+		...item,
+		applicant: { ...item.applicant },
+		content: { ...item.content }
+	};
+}
+
 const drafts = new Map<string, TravelDraft>();
-const applications: TravelApplication[] = MOCK_APPLICATIONS.map((item) => ({ ...item }));
+const applications: TravelApplication[] = MOCK_APPLICATIONS.map(cloneApplication);
 const submittedFlags = new Set<string>();
+
+export function resetStore(seed: TravelApplication[] = MOCK_APPLICATIONS) {
+	drafts.clear();
+	submittedFlags.clear();
+	applications.splice(0, applications.length, ...seed.map(cloneApplication));
+}
 
 export function getDraft(username: string, name: string): TravelDraft {
 	const current = drafts.get(username);
